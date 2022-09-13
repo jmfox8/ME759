@@ -6,5 +6,4 @@
 #SBATCH --output="FirstSlurm.out"
 #SBATCH --error="FirstSlurm.err"
 
-cd $SLURM_SUBMIT_DIR
 echo $(hostname)
