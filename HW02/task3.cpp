@@ -13,7 +13,7 @@ using std::chrono::duration;
 int main(int argc, char *argv[]){
  
  //Define Matrices Dimensions
- int n = 2048;
+ int n = 1500;
  
  // Intialize and Allocate Memory for Arrays
  double* A_arr = new double[n*n];
