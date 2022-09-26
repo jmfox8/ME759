@@ -8,19 +8,24 @@
 
 using namespace std;
 
-__global__ void threadmath(int a, int* dA){
+__global__ void threadmath(int a, int* dA, int block_count, int threadcount){
     int x = threadIdx.x;
     int y = blockIdx.x;
-    dA[8*y+x] = a*x + y;
+    dA[threadcount*y+x] = a*x + y;
 }
 
 int main(int argc, char *argv[]){
+    // Declare configuration values
+    int threadcount = 8;
+    int block_count = 2;
+    int Asize = 16;
+
     // Allocate array on host
-    int* hA = new int[16];
+    int* hA = new int[Asize];
     
     // Allocate array on device
     int *dA = NULL;
-    cudaMalloc(&dA, 16*sizeof(int));
+    cudaMalloc(&dA, Asize*sizeof(int));
     
     // Initialization for randomization
     random_device entropy_source;
@@ -31,13 +36,13 @@ int main(int argc, char *argv[]){
     int a = distro(generator);
 
     // Call Kernel
-    threadmath <<<2,8>>>(a,dA);
+    threadmath <<<2,8>>>(a,dA,block_count,threadcount);
     cudaDeviceSynchronize();
 
     // Copy values from device array to host array
-    cudaMemcpy(hA,dA,16*sizeof(int),cudaMemcpyDeviceToHost);
+    cudaMemcpy(hA,dA,Asize*sizeof(int),cudaMemcpyDeviceToHost);
         // Print array values from host array
-    for (int j = 0; j < 15; j++){
+    for (int j = 0; j < Asize; j++){
         printf("%d ",hA[j]);
     }
     cout << "\n";
