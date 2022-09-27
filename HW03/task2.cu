@@ -8,7 +8,7 @@
 
 using namespace std;
 
-__global__ void threadmath(int a, int* dA, int block_count, int threadcount){
+__global__ void threadmath(int a, int* dA, int threadcount){
     int x = threadIdx.x;
     int y = blockIdx.x;
     dA[threadcount*y+x] = a*x + y;
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]){
     int a = distro(generator);
 
     // Call Kernel
-    threadmath <<<2,8>>>(a,dA,block_count,threadcount);
+    threadmath <<<2,8>>>(a,dA,threadcount);
     cudaDeviceSynchronize();
 
     // Copy values from device array to host array
