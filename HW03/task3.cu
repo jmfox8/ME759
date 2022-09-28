@@ -9,7 +9,6 @@
 
 using namespace std;
 
-
 int main(int argc, char *argv[]){
     
     // Get Command Line Input
@@ -17,7 +16,7 @@ int main(int argc, char *argv[]){
     
     // Declare GPU configuration values
     int threadperblock = 512;
-    int blocksneeded = round((n+threadperblock)/threadperblock);
+    int blocksneeded = (n+threadperblock-1)/threadperblock;
 
     // Allocate arrays on host
     float* hB = new float[n];

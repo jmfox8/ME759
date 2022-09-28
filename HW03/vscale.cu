@@ -5,8 +5,12 @@
 using namespace std;
 
 __global__ void vscale(const float *a, float *b, unsigned int n){
-    int x = threadIdx.x;
-    int y = blockIdx.x;
+    int thread = threadIdx.x;
+    int block = blockIdx.x;
     int blocksize = blockDim.x;
-    b[blocksize*y+x] = a[blocksize*y+x]*b[blocksize*y+x];
+    int i = blocksize * block + thread;
+    // ensure math only occurs within the actual bounds of the array
+    if (i < n){
+        b[i] = a[i]*b[i];
+    }
 }
