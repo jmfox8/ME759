@@ -1,4 +1,4 @@
-#include "vscale.cuh"
+#include "matmul.cuh"
 #include <iostream>
 #include <cstddef>
 
