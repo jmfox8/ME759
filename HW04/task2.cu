@@ -41,9 +41,19 @@ int main(int argc, char *argv[]){
     for (int j = 0; j<(2*R+1);j++){
         mask[j] = RD(generator);
     }
+    // Initialization for CUDA Timing
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
 
     // Copy Randomized Arrays from Host to Device
     cudaMemcpy(imaged,image,n*sizeof(float),cudaMemcpyHostToDevice);
     cudaMemcpy(maskd,mask,(2*R+1)*sizeof(float),cudaMemcpyHostToDevice);
 
+
+    // Call and time stencil function
+    cudaEventRecord(start);
+    stencil(imaged,maskd,outputd,n,R,threads_per_block);
+    cudaEventRecord(stop);
+    cudaEventSynchronize(stop);
 }
