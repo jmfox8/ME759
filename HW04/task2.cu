@@ -14,7 +14,7 @@ int main(int argc, char *argv[]){
     int n = atoi(argv[1]);
     int R = atoi(argv[2]);
     int threads_per_block = atoi(argv[3]);
-
+ 
 
     // Initialize Arrays on the Host
     float* image = new float[n];
