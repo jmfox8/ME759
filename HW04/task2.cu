@@ -14,7 +14,6 @@ int main(int argc, char *argv[]){
     int n = atoi(argv[1]);
     int R = atoi(argv[2]);
     int threads_per_block = atoi(argv[3]);
- 
 
     // Initialize Arrays on the Host
     float* image = new float[n];
@@ -56,4 +55,23 @@ int main(int argc, char *argv[]){
     stencil(imaged,maskd,outputd,n,R,threads_per_block);
     cudaEventRecord(stop);
     cudaEventSynchronize(stop);
+
+    // Calculate time taken
+    float ms;
+    cudaEventElapsedTime(&ms, start, stop);
+
+    // Copy Results from device to host memory
+    cudaMemcpy(output,outputd,n*sizeof(float),cudaMemcpyDeviceToHost);
+
+    // Print Results
+    cout << output[n-1] << "\n";
+    cout << ms << "\n";
+
+    // Deallocate memory
+    cudaFree(outputd);
+    cudaFree(imaged);
+    cudaFree(maskd);
+    delete[] output;
+    delete[] image;
+    delete[] mask;
 }
