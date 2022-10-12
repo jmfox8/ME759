@@ -1,4 +1,4 @@
-#include "matmul.cuh"
+#include "reduce.cuh"
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
@@ -8,6 +8,7 @@
 #include <chrono>
 
 using namespace std;
+
 int main(int argc, char *argv[]){
 
     // Get Command Line Input
@@ -37,15 +38,15 @@ int main(int argc, char *argv[]){
     uniform_real_distribution<float> RD(-1.0,1.0);
     for (int i = 0; i<n; i++){
         // inputh[i] = RD(generator);
-        inputh[i] = i;
+        inputh[i] = 1.0;
     }
 
     // Copy Randomized Array from host to device
     cudaMemcpy(inputd,inputh,n*sizeof(float),cudaMemcpyHostToDevice);
 
-    // Call and time matmul function
+    // Call and time reduce function
     cudaEventRecord(start);
-    reduce(float &inputd, float &outputd, n, threads_per_block);
+    reduce(&inputd, &outputd, n, threads_per_block);
     cudaEventRecord(stop);
     cudaEventSynchronize(stop);
     
@@ -55,9 +56,16 @@ int main(int argc, char *argv[]){
 
     // Copy output array from device to host
     cudaMemcpy(outputh,outputd,(((n+threads_per_block-1)/threads_per_block)+1)/2*sizeof(float),cudaMemcpyDeviceToHost);
-
+    cudaMemcpy(inputh,inputd,n*sizeof(float),cudaMemcpyDeviceToHost);
+    
     // Print Results
-
+for (int i = 0; i<(((n+threads_per_block-1)/threads_per_block)+1)/2; i++){
+    std::cout << outputh[i]<<"\n";
+}
+std::cout<<"\n";
+for (int i =0; i<n; i++){
+    std::cout << intputh[i]<<"\n";
+}
     // Deallocate Memory
     cudaFree(inputd);
     cudaFree(outputd);
