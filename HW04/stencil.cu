@@ -12,7 +12,7 @@ int blocksize = blockDim.x;
 
 extern __shared__ float s[];
 float *s_mask = s; // create shared array for the mask
-float *s_output = (float*)&s_mask[blocksize+(2*R)]; // determine size of the shared mask array
+float *s_output = (float*)&s_mask[1+(2*R)]; // determine size of the shared mask array
 float *s_image = (float*)&s_output[blocksize]; // make shared output array as large as the number of threads in the block
 
 // Load the mask array into shared memory, each thread loads a single entry    
