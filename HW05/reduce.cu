@@ -2,15 +2,15 @@
 #include <iostream>
 #include <cstddef>
 
-using namespace std;
-
 // implements the 'first add during global load' version (Kernel 4) for the
-// parallel reduction g_idata is the array to be reduced, and is available on
+// parallel reduction g_idata is 
+
+ array to be reduced, and is available on
 // the device. g_odata is the array that the reduced results will be written to,
 // and is available on the device. expects a 1D configuration. uses only
 // dynamically allocated shared memory.
 __global__ void reduce_kernel(float *g_idata, float *g_odata, unsigned int n){
-    extern __shared__ int sharedarray[];
+    extern __shared__ float sharedarray[];
     // perform first level of reduction upon reading from 
     // global memory and writing to shared memory
     unsigned int threadnum = threadIdx.x;
@@ -39,11 +39,14 @@ __global__ void reduce_kernel(float *g_idata, float *g_odata, unsigned int n){
 
     // Check to account for left over entry in arrays with odd valued threads per block, 
     // adds to final value after all else is complete
-    if (blockDim.x % 2 != 0 && threadnum == n-1) sharedarray[0] += sharedarray[blockDim.x-1];
+    if ((blockDim.x % 2) != 0 && n>=blockDim.x && threadnum == blockDim.x-1) sharedarray[0] += sharedarray[threadnum];
     __syncthreads();
 
     // write result for this block to global memory
-    if(threadnum == 0) g_odata[blockIdx.x] = sharedarray[0];
+    if(threadnum == 0){
+     g_odata[blockIdx.x] = sharedarray[0];
+     g_idata[blockIdx.x]=  sharedarray[0];
+}
 }
 
 // the sum of all elements in the *input array should be written to the first
@@ -55,18 +58,21 @@ __global__ void reduce_kernel(float *g_idata, float *g_odata, unsigned int n){
 // end in a call to cudaDeviceSynchronize for timing purposes
 __host__ void reduce(float **input, float **output, unsigned int N, unsigned int threads_per_block){
     int blocksneeded = (((N+threads_per_block-1)/threads_per_block)+1)/2;
+    // Account for integers rounding down
     if (blocksneeded == 0) blocksneeded = 1;
+    // Call kernel for first time
     reduce_kernel<<<blocksneeded,threads_per_block,threads_per_block*sizeof(float)>>>(*input,*output,N);
+    // Call additional kernels if needed
     if (blocksneeded > 1){
-        n = blocksneeded;
+        //redefine n and blocksneeded for new input array from old output
+        int n = blocksneeded;
         blocksneeded = (((n + threads_per_block -1)/threads_per_block)+1)/2;
-        for(int i = 0; i<blocksneeded; i+=threads_per_block){
-            reduce_kernel<<<blocksneeded,threads_per_block,threads_per_block*sizeof(float)>>>(*output,*output,n);
-            n = blocksneeded;
-            blocksneeded = (((n + threads_per_block -1)/threads_per_block)+1)/2;
+        int loop_n = n;
+        for(int i = 0; i<=n; i+=2*threads_per_block){
+            reduce_kernel<<<blocksneeded,threads_per_block,threads_per_block*sizeof(float)>>>(*input,*output,loop_n);
+            loop_n = blocksneeded;
+            blocksneeded = (((loop_n + threads_per_block -1)/threads_per_block)+1)/2;
         }
     }
-    *input[0] = *output[0];
-
     cudaDeviceSynchronize();
 }

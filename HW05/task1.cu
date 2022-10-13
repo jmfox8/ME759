@@ -7,7 +7,6 @@
 #include <vector>
 #include <chrono>
 
-using namespace std;
 
 int main(int argc, char *argv[]){
 
@@ -31,14 +30,13 @@ int main(int argc, char *argv[]){
     cudaEventCreate(&stop);
 
     // Initialization for randomization
-    random_device entropy_source;
-    mt19937 generator(entropy_source());
+    std::random_device entropy_source;
+    std::mt19937 generator(entropy_source());
     
     // Generate random float values and populate host arrays
-    uniform_real_distribution<float> RD(-1.0,1.0);
+    std::uniform_real_distribution<float> RD(-1.0,1.0);
     for (int i = 0; i<n; i++){
-        // inputh[i] = RD(generator);
-        inputh[i] = 1.0;
+        inputh[i] = RD(generator);
     }
 
     // Copy Randomized Array from host to device
@@ -59,13 +57,9 @@ int main(int argc, char *argv[]){
     cudaMemcpy(inputh,inputd,n*sizeof(float),cudaMemcpyDeviceToHost);
     
     // Print Results
-for (int i = 0; i<(((n+threads_per_block-1)/threads_per_block)+1)/2; i++){
-    std::cout << outputh[i]<<"\n";
-}
-std::cout<<"\n";
-for (int i =0; i<n; i++){
-    std::cout << intputh[i]<<"\n";
-}
+    std::cout << inputh[0]<<"\n";
+    std::cout << ms<<"\n";
+
     // Deallocate Memory
     cudaFree(inputd);
     cudaFree(outputd);
