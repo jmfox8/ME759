@@ -15,7 +15,7 @@ int main(int argc, char *argv[]){
     unsigned int threads_per_block = atoi(argv[2]);
 
     // Allocate managed memory
-    float* input, output; 
+    float *input, *output; 
     cudaMallocManaged((void**)&input, n*sizeof(float));
     cudaMallocManaged((void**)&output, n*sizeof(float));
 
@@ -43,4 +43,9 @@ int main(int argc, char *argv[]){
     // Get function elapsed time
     float ms;
     cudaEventElapsedTime(&ms, start, stop);
+    
+    // Clean up memory
+    cudaFree(input);
+    cudaFree(output);
 
+}
