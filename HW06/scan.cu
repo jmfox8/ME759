@@ -1,6 +1,8 @@
 #include "scan.cuh"
 #include <iostream>
 #include <cstddef>
+#include <cstdio>
+#include <stdlib.h>
 
 
 // Performs an *inclusive scan* on the array input and writes the results to the array output.
@@ -32,7 +34,9 @@ __global__ void hillis_steele(const float *input, float *output, float *sumarray
     // write scan results of block to output array
     output[block*blocksize + thread] = sharedarray[pout*blocksize+thread];
     // write total sum of block to the blocksum array
-    if (thread == blocksize - 1) sumarray[block] = output[block*blocksize + thread];
+    if (thread == blocksize - 1){
+        sumarray[block] = output[block*blocksize + thread];
+    }
 }
 __global__ void hillis_steele_odd(const float *input, float *output, float* sumarray,int n){
     extern volatile __shared__ float sharedarray[];
@@ -42,12 +46,9 @@ __global__ void hillis_steele_odd(const float *input, float *output, float* suma
     int needed_threads = n % blocksize;
     int pout = 0, pin = 1;
     // Copy input to sharred array
-    if (thread >= needed_threads){
-        sharedarray[thread] = 0;
-        __syncthreads();
-    }
-    else{
-        sharedarray[thread] = input[n-needed_threads + thread];
+    if (thread < needed_threads){
+
+        sharedarray[thread] = input[(n/blocksize)*blocksize + thread];
         __syncthreads();
         for (int offset = 1; offset<n; offset *=2){
             pout = 1 - pout;
@@ -57,8 +58,8 @@ __global__ void hillis_steele_odd(const float *input, float *output, float* suma
             __syncthreads();
         }
          // write scanned block to output array
-        output[n-needed_threads + thread] = sharedarray[pout*blocksize+thread];
-        if (thread == needed_threads - 1) sumarray[n/blocksize] = output[n-needed_threads + thread];
+        output[(n/blocksize)*blocksize + thread] = sharedarray[pout*blocksize+thread];
+        if (thread == needed_threads - 1) sumarray[n/blocksize] = sharedarray[pout*blocksize+thread];
     }
 }
 __global__ void kernel_add(const float * scannedsumarray, float * output, int n){
@@ -73,32 +74,37 @@ __global__ void kernel_add(const float * scannedsumarray, float * output, int n)
 
 __host__ void scan(const float* input, float* output, unsigned int n, unsigned int threads_per_block){
     float *sumarray, *scannedsumarray;
-    int blocksneeded_main = n/threads_per_block;
-
+    int fullblocksneeded = n/threads_per_block;
+    int remainingvals = n % threads_per_block;
 // determine size of sumscan array and f helper kernel needed for first scan
 if (n % threads_per_block > 0){
-    cudaMallocManaged((void**)&sumarray, (blocksneeded_main + 1)*sizeof(float));
-    cudaMallocManaged((void**)&scannedsumarray, (blocksneeded_main + 1)*sizeof(float));
-    hillis_steele<<<blocksneeded_main,threads_per_block,2*threads_per_block*sizeof(float)>>>(input,output,sumarray, n);
-    hillis_steele_odd<<<1,threads_per_block,2*threads_per_block*sizeof(float)>>>(input,output,sumarray,n);
+    //Allocate arrays for sum values
+    cudaMallocManaged((void**)&sumarray, (fullblocksneeded + 1)*sizeof(float));
+    cudaMallocManaged((void**)&scannedsumarray, (fullblocksneeded + 1)*sizeof(float));
+
+    // Call kernel for complete thread blocks
+    hillis_steele<<<fullblocksneeded,threads_per_block,2*threads_per_block*sizeof(float)>>>(input,output,sumarray, n);
+    
+    // Call kernel for final incomplete thread block
+    hillis_steele_odd<<<1,threads_per_block,2*remainingvals*sizeof(float)>>>(input,output,sumarray,n);
 }
 else {
-    cudaMallocManaged((void**)&sumarray, (blocksneeded_main)*sizeof(float));
-    cudaMallocManaged((void**)&scannedsumarray, (blocksneeded_main)*sizeof(float));
-    hillis_steele<<<blocksneeded_main,threads_per_block,2*threads_per_block*sizeof(float)>>>(input,output,sumarray, n);
+    cudaMallocManaged((void**)&sumarray, (fullblocksneeded)*sizeof(float));
+    cudaMallocManaged((void**)&scannedsumarray, (fullblocksneeded)*sizeof(float));
+    hillis_steele<<<fullblocksneeded,threads_per_block,2*threads_per_block*sizeof(float)>>>(input,output,sumarray, n);
 }
 
 // determine if the sumarray needs a full block kernel or helper kernel
-if (blocksneeded_main == threads_per_block){
-    hillis_steele<<<1,threads_per_block,2*threads_per_block*sizeof(float)>>>(sumarray,scannedsumarray,sumarray,blocksneeded);
+if (fullblocksneeded == threads_per_block){
+    hillis_steele<<<1,threads_per_block,2*threads_per_block*sizeof(float)>>>(sumarray,scannedsumarray,sumarray,fullblocksneeded);
+    kernel_add<<<fullblocksneeded,threads_per_block>>>(scannedsumarray,output,n);
+ 
 }
 else {
-    hillis_steele_odd<<<1,threads_per_block,2*threads_per_block*sizeof(float)>>>(sumarray,scannedsumarray,sumarray,blocksneeded);
+    hillis_steele_odd<<<1,threads_per_block,2*remainingvals*sizeof(float)>>>(sumarray,scannedsumarray,sumarray,fullblocksneeded + 1);
+    kernel_add<<<fullblocksneeded+1,threads_per_block>>>(scannedsumarray,output,n);
 }
 
-// Add scanned sum array values to output array
-kernel_add<<<blocksneeded_main,threads_per_block>>>(scannedsumarray,output,n);
- 
 // memory cleanup
 cudaFree(sumarray);
 cudaFree(scannedsumarray);

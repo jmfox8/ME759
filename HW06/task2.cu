@@ -44,6 +44,9 @@ int main(int argc, char *argv[]){
     float ms;
     cudaEventElapsedTime(&ms, start, stop);
     
+    //Print Value
+    std::cout<<ms<<"\n";
+    
     // Clean up memory
     cudaFree(input);
     cudaFree(output);
