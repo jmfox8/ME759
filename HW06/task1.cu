@@ -35,12 +35,9 @@ int main(int argc, char *argv[]){
     std::uniform_real_distribution<float> RD(-1.0,1.0);
     for (int i = 0; i<n; i++){
         for (int j = 0; j<n; j++){
-            //A[j*n+i] = RD(generator);
-            A[j*n+i] = 1;
-            // B[j*n+i] = RD(generator);
-            B[j*n+i] = 2;
-            // C[j*n+1] = RD(generator);
-            C[j*n+i] = 1;
+            A[j*n+i] = RD(generator);
+            B[j*n+i] = RD(generator);
+            C[j*n+1] = RD(generator);
         }
     }
 
