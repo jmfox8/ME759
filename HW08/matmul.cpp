@@ -10,16 +10,12 @@
 
 void mmul(const float* A, const float* B, float* C, const std::size_t n){
     // HW2 Code
-    int i;
-    int j;
-    int k;
-    for (i = 0; i<n; i++){
-
-    for (j = 0; j<n; j++){
-
-        for (k = 0; k<n; k++){
+for (int i = 0; i<n; i++){
+    for (int k = 0; k<n; k++){
+        for (int j = 0; j<n; j++){
             C[i*n+j] = C[i*n+j] + A[i*n+k]*B[k*n+j];
         }
     }
 }
 }
+
