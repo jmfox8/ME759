@@ -14,22 +14,25 @@ int main(int argc, char *argv[]){
     int threads = atoi(argv[2]);
     if (threads < 1 || threads > 20){
         std::cout<<"Thread count out of bounds";
-        exit();
+        exit(0);
     }
     
     // Intialize and Allocate Memory for Arrays
-    double* A = new float[n*n];
-    double* B = new float[n*n];
-    double* C = new float[n*n];
+    float* A = new float[n*n];
+    float* B = new float[n*n];
+    float* C = new float[n*n];
 
+    // Initialization for OpenMP
+    omp_set_num_threads(threads); 
+    
     // Initialization for timing
-    duration<double, std::milli> ms;
-    high_resolution_clock::time_point start;
-    high_resolution_clock::time_point end;
+    std::chrono::duration<double, std::milli> ms;
+    std::chrono::high_resolution_clock::time_point start;
+    std::chrono::high_resolution_clock::time_point end;
 
     // Initialization for randomization
-    random_device entropy_source;
-    mt19937 generator(entropy_source());
+    std::random_device entropy_source;
+    std::mt19937 generator(entropy_source());
 
     // Generate random float values and populate arrays
     std::uniform_real_distribution<float> RD(-10.0,10.0);
@@ -37,13 +40,12 @@ int main(int argc, char *argv[]){
             A[i] = RD(generator);
             B[i] = RD(generator);
         }
-
+    
     // Execute Function Call with timing
-    start = high_resolution_clock::now();
+    start = std::chrono::high_resolution_clock::now();
     mmul(A, B, C, n);
-    end = high_resolution_clock::now();
-    ms = std::chrono::duration_cast<duration<double, std::milli> >(end-start);
-
+    end = std::chrono::high_resolution_clock::now();
+    ms = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(end-start);
 
     //Print results
     std::cout << C[0] << "\n";
