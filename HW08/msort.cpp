@@ -43,7 +43,12 @@ void serialsort(int* arr, const std::size_t n){
     int* arr2  = new int[n];
     for (int width = 1; width<n; width = 2*width){
         for (int i = 0; i < n; i = i + 2*width){
-            merge(arr, i, std::min(i+width, n),min(i+2*width,n),arr2);
+            if (i + width < n){
+                if (i + 2 * width < n) merge(arr, i, i+width, i + 2*width,arr2);
+                else merge(arr,i,i+width,n,arr2);
+            }
+            else merge(arr,i,n,n,arr2);
+            //            merge(arr, i, std::min(i+width, n),min(i+2*width,n),arr2);
         }
         copyarray(arr2, arr, n);
     }
