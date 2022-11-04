@@ -10,7 +10,7 @@
 
 void mmul(const float* A, const float* B, float* C, const std::size_t n){
     #pragma omp parallel 
-    #pragma for schedule(static) nowait
+    #pragma omp for schedule(static) nowait
     // HW2 Code
     for (int i = 0; i<n; i++){
         for (int k = 0; k<n; k++){
