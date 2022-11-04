@@ -38,7 +38,7 @@ int main(int argc, char *argv[]){
     for (int i = 0; i<n; i++){
             arr[i] = static_cast<int>(RD(generator));
         }
-
+        
     // Execute Function Call with timing
     start = std::chrono::high_resolution_clock::now();
     msort(arr, n, ts);

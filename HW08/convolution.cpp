@@ -16,7 +16,7 @@ void convolve(const float *image, float *output, std::size_t n, const float *mas
     int imagei;
     int imagej;
     int imageij;
-    #pragma omp parallel for collapse(4) private(imagei,imagej,imageij)
+    #pragma omp parallel for schedule(dynamic)
     for (int x = 0; x<n; x++){
         for(int y = 0; y<n; y++){
             for (int i = 0;i<m;i++){
