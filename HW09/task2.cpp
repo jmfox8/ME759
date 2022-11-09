@@ -33,6 +33,7 @@ int main(int argc, char *argv[]){
     std::chrono::duration<double, std::milli> ms;
     std::chrono::high_resolution_clock::time_point start;
     std::chrono::high_resolution_clock::time_point end;
+    double avg_ms = 0;
 
     // Initialization for randomization
     std::random_device entropy_source;
@@ -45,17 +46,21 @@ int main(int argc, char *argv[]){
             y[i] = RD(generator);
         }
 
-    //Execute and time cluster function
-    start = std::chrono::high_resolution_clock::now();
-    incircle = montecarlo(n,x,y,r); 
-    end = std::chrono::high_resolution_clock::now();
-    ms = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end-start);
+    //Execute and time cluster function with 10 for averaging
+    for (int i = 0; i<10; i++){
+        start = std::chrono::high_resolution_clock::now();
+        incircle = montecarlo(n,x,y,r); 
+        end = std::chrono::high_resolution_clock::now();
+        ms = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end-start);
+        //Iterator for averaging time across 10
+        avgms += ms.count();
+    }
 
     // Calculate estimated value of pi
     float piest = 4*incircle/n;
 
     // Print outputs
-    printf("%f \n%f \n",piest,ms.count());
+    printf("%f \n%f \n",piest,avgms/10);
 
     // Deallocate Memory
     delete[] x;

@@ -13,9 +13,9 @@
 
 int montecarlo(const size_t n, const float *x, const float *y, const float radius){
     int incircle = 0;
-    #pragma omp parallel for reduction(+:incircle) 
+    #pragma omp parallel for simd reduction(+:incircle) 
     for (int i = 0; i<n; i++){
-            incircle += (x[i]*x[i] + y[j]*y[j]) <= 1 ? 1 : 0;
+            incircle += (x[i]*x[i] + y[i]*y[i]) <= 1 ? 1 : 0;
         }
 return(incircle);
 }
