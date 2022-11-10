@@ -5,6 +5,7 @@
 #include <math.h>
 #include <random>
 #include <vector>
+#include <algorithm> // std::sort
 #include <chrono>
 #include <omp.h>
 
@@ -22,9 +23,6 @@ int main(int argc, char *argv[]){
     float* arr = new float[n];
     float* centers = new float[threads];
     float* dists = new float[threads];
-
-    // Initialization for OpenMP
-    omp_set_num_threads(threads); 
     
     // Initialization for timing
     std::chrono::duration<double, std::milli> ms;
@@ -45,13 +43,26 @@ int main(int argc, char *argv[]){
     
     //Populate array dists
     for (int i = 1; i<=threads; i++){
-        centers = (2*i-1)*n/2/threads;
+        centers[i-1] = (2*i-1)*n/2/threads;
     }
 
     //Execute and time cluster function
     start = std::chrono::high_resolution_clock::now();
-    cluster(n,t,arr,centers,dists); 
+    cluster(n,threads,arr,centers,dists); 
     end = std::chrono::high_resolution_clock::now();
-    duration_ms = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end-start);
+    ms = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end-start);
 
+    // Calculate maximum of dists array
+    float dist_max = *std::max_element(dists,dists+threads);
+    int dist_max_index = std::find(dists, dists+threads, dist_max) - dists;
+
+    // Print results
+    printf("%f \n%d \n",dist_max,dist_max_index);
+    printf("%f \n",ms.count());
+
+    // Deallocate Memory
+    delete[] arr;
+    delete[] centers;
+    delete[] dists;
+    return(0);
 }
