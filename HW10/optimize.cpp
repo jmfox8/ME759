@@ -80,11 +80,13 @@ void optimize4(vec *v, data_t *dest){
         x1 = x1 OP d[i + 1];
     }
     // Finish any remaining elements
+
     for(; i < length; i++) 
     {
-        x0 = x0 OP d[i];
+       x0 = x0 OP d[i];
     }
     *dest = x0 OP x1;
+
 }
 
 void optimize5(vec *v, data_t *dest){
@@ -103,15 +105,17 @@ void optimize5(vec *v, data_t *dest){
         x2 = x2 OP d[i + 2];
     }
     // Finish any remaining elements
-    /*for(; i < limit; i += 2) 
+    for(; i < limit; i += 2) 
     {
         x0 = x0 OP d[i];
         x1 = x1 OP d[i+1];
     }
-*/
-    for(; i < length; i++) 
+
+     for(; i < length; i++) 
     {
         x0 = x0 OP d[i];
     }
+    
     *dest = x0 OP x1 OP x2;
+
 } 

@@ -25,19 +25,14 @@ int main(int argc, char *argv[]){
     std::chrono::high_resolution_clock::time_point end1, end2, end3, end4, end5;
     double ms1avg = 0.0, ms2avg = 0.0, ms3avg = 0.0, ms4avg = 0.0, ms5avg = 0.0;
     
-    // Initialization for randomization
-    std::random_device entropy_source;
-    std::mt19937 generator(entropy_source());
-    
     //int* arr = new int[n];
     data_t* arr = new data_t[n];
 
-    // Generate random float values and populate array arr
-    std::uniform_real_distribution<float> RD(1,10);
+    // Populate Array arr
     for (int i = 0; i<n; i++){
-            arr[i] = static_cast< data_t > (RD(generator));
+            arr[i] = static_cast < data_t > (1);
     }
-    //Assign random values to the data pointer of the struct
+    //Assign values to the data pointer of the struct
     v.data = arr;
 
     // Run and time the optimizations
@@ -61,13 +56,13 @@ int main(int argc, char *argv[]){
         ms3avg += ms3.count();
 
         start4 = std::chrono::high_resolution_clock::now();
-        optimize1(&v, &dest4);
+        optimize4(&v, &dest4);
         end4 = std::chrono::high_resolution_clock::now();
         ms4 = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end4 - start4);
         ms4avg += ms4.count();
 
         start5 = std::chrono::high_resolution_clock::now();
-        optimize1(&v, &dest5);
+        optimize5(&v, &dest5);
         end5 = std::chrono::high_resolution_clock::now();
         ms5 = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end5 - start5);
         ms5avg += ms5.count();
@@ -78,4 +73,9 @@ int main(int argc, char *argv[]){
     std::cout<<dest3<<"\n"<<ms3avg/10<<"\n";
     std::cout<<dest4<<"\n"<<ms4avg/10<<"\n";
     std::cout<<dest5<<"\n"<<ms5avg/10<<"\n";
+
+    // Deallocate Memory
+    delete[] arr;
+    
+    return(0);
 }
