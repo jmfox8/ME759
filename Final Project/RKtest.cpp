@@ -7,15 +7,20 @@ using namespace std;
 int main(){
     float x0, y0, xn, h, yn, k1, k2, k3, k4, k;
     int n;
-    cout<<"Enter Initial Conditions"<<endl;
-    cout<<"x0 = ";
-    cin>> x0;
-    cout<<"y0 = ";
-    cin>> y0;
-    cout<< "Enter calculation point xn = ";
-    cin>>xn;
-    cout<<"Enter number of steps: ";
-    cin>> n;
+    //cout<<"Enter Initial Conditions"<<endl;
+    //cout<<"x0 = ";
+    //cin>> x0;
+    //cout<<"y0 = ";
+    //cin>> y0;
+    //cout<< "Enter calculation point xn = ";
+    //cin>>xn;
+    //cout<<"Enter number of steps: ";
+    //cin>> n;
+
+    x0 = 0;
+    y0 = 1;
+    xn = 100;
+    n = 100;
 
     h = (xn-x0)/n;
 
