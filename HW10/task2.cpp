@@ -51,7 +51,7 @@ int main(int argc, char *argv[]){
     // Call and time functions
     start = std::chrono::high_resolution_clock::now();
     res = reduce(arr,0,n);
-    MPI_Reduce(&res, &global_res,1,MPI_FLOAT,MPI_SUM,0,MPI_COMM_WORLD);
+    MPI_Allreduce(&res, &global_res,1,MPI_FLOAT,MPI_SUM,0,MPI_COMM_WORLD);
     end = std::chrono::high_resolution_clock::now();
     ms = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end-start);
     if (my_rank == 0){
