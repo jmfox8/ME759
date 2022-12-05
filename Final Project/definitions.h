@@ -12,5 +12,10 @@ typedef struct segment{
     float t; // Torque around distal joint
 };
 
+typedef struct tpulse{
+    float amp; //Peak of torque waveform
+    float duration; //Length of torque waveform
+    float ratio; //ratio of hip to ankle torque
+};
 
 #endif
