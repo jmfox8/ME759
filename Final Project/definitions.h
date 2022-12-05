@@ -10,10 +10,7 @@ typedef struct segment{
     float I; //Moment of inertia of segment around distal joint [kgm^2]
     float Icm; //Moment of inertia of segment around CoM [kgm^2]
     float t; // Torque around distal joint
-}
-
-
-
+};
 
 
 #endif
