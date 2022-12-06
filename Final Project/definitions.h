@@ -18,4 +18,6 @@ typedef struct tpulse{
     float ratio; //ratio of hip to ankle torque
 };
 
+std::vector<float> f(float t, float *q,segment vals,float torque, float k, float l);
+float tpulsecalc(tpulse torque, float time);
 #endif
