@@ -25,21 +25,22 @@ using namespace std;
 
 int main(){
     // Initialize Solution Variables
-    float phi, tf, t0, h, yn, k1[2], k2[2], k3[2], k4[2], k[2], q[2], qn[2];
+    float phi, tf, t0, h, yn, k1[2], k2[2], k3[2], k4[2], k[2], q[2], qn[2], oldnorm, newnorm;
     int n;
     segment vals;
     tpulse segt;
     vector <float> fun1(2,0), fun2(2,0), fun3(2,0), fun4(2,0);
 
+    oldnorm = 20;
     q[0] = -5*PI/180; // Initial value of q1 = phi = 45 degrees
     q[1] = 0; // Initial value of q2 = phidot = 0 degrees/s;
     //torque = 40; // torque value at pivot joint [Newtons]
     t0 = 0; //initial value of deriving variable (time)
-    tf = 0.1; // final value of deriving variable (time)
+    tf = 0.4; // final value of deriving variable (time)
     n = 100; // Number of steps
     h = (tf-t0)/n; //step size
     
-    segt.duration = 0.1; //Length of torque pulse [s]
+    segt.duration = 0.05; //Length of torque pulse [s]
     segt.amp = 50; // maximum amplitude of torque pulse sin wave [N*m]
     
 
@@ -88,13 +89,17 @@ int main(){
         //k = (k1+2*k2+2*k3+k4)/6;
         qn[0] = q[0]+k[0];
         qn[1] = q[1]+k[1];
-        //std::cout<< qn[0]*180/PI <<"\t"<< qn[1]*180/PI << "\t" << torque_i << "\t" << t0 <<endl;
+        std::cout << qn[0]*180/PI <<"\t"<< qn[1]*180/PI << "\t" << torque_i[i] << "\t" << t0 <<endl;
+        newnorm = sqrt(qn[0]*qn[0]+qn[1]*qn[1]);
+        //if (newnorm >= oldnorm) break;
         t0 = t0+h;
         q[0] = qn[0];
         q[1] = qn[1];
+        oldnorm = newnorm;
     }
+
     end = std::chrono::high_resolution_clock::now();
-    std::cout<<"\nValue of q[1] at t = "<< tf << " is "<<q[1]*180/PI << "\n";
+    std::cout<<"\nValue of q[1] at t = "<< t0 << " is "<<q[1]*180/PI << "\n";
     ms = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end - start);
     std::cout << "time for full calculation: "<< ms.count() <<"\n";
     return 0;
