@@ -25,13 +25,12 @@ using namespace std;
 
 int main(){
     // Initialize Solution Variables
-    float phi, tf, t0, h, yn, k1[2], k2[2], k3[2], k4[2], k[2], q[2], qn[2], oldnorm, newnorm;
+    float phi, tf, t0, h, yn, k1[2], k2[2], k3[2], k4[2], k[2], q[2], min_norm;
     int n;
     segment vals;
     tpulse segt;
     vector <float> fun1(2,0), fun2(2,0), fun3(2,0), fun4(2,0);
 
-    oldnorm = 20;
     q[0] = -5*PI/180; // Initial value of q1 = phi = 45 degrees
     q[1] = 0; // Initial value of q2 = phidot = 0 degrees/s;
     //torque = 40; // torque value at pivot joint [Newtons]
@@ -40,6 +39,8 @@ int main(){
     n = 100; // Number of steps
     h = (tf-t0)/n; //step size
     
+    float* norms = new float[n];
+    float* qn = new float[2*n];
     segt.duration = 0.05; //Length of torque pulse [s]
     segt.amp = 50; // maximum amplitude of torque pulse sin wave [N*m]
     
@@ -55,16 +56,17 @@ int main(){
     std::chrono::high_resolution_clock::time_point start;
     std::chrono::high_resolution_clock::time_point end;
 
-    start = std::chrono::high_resolution_clock::now();
     // Calculate toruqes
     float torque_i[n];
     for (int i = 0; i<n; i++){
-        torque_i[i] = tcalc(segt,t0+(h*i));
+        torque_i[i] = tcalc(segt,t0+(h*i));         //move this outside of for loop, parallelize separately for efficiency and load to shared mem?
     }
 
+    // Calculate norm value for initial positions
+    min_norm = sqrt(q[0]*q[0] + q[1]*q[1]);
 
     for (int i = 0; i<n; i++){
-        //move this outside of for loop, parallelize separately for efficiency and load to shared mem?
+
         
         fun1 = f(t0,q,vals,torque_i[i], 0, 0);
         k1[0] = h * fun1[0];
@@ -87,21 +89,28 @@ int main(){
         //k3 = h * fn((x0+h/2),(y0+k2/2));
         //k4 = h * fn((x0+h),(y0+k3)); 
         //k = (k1+2*k2+2*k3+k4)/6;
-        qn[0] = q[0]+k[0];
-        qn[1] = q[1]+k[1];
-        std::cout << qn[0]*180/PI <<"\t"<< qn[1]*180/PI << "\t" << torque_i[i] << "\t" << t0 <<endl;
-        newnorm = sqrt(qn[0]*qn[0]+qn[1]*qn[1]);
-        //if (newnorm >= oldnorm) break;
+        qn[i*2] = q[0]+k[0];
+        qn[i*2 + 1] = q[1]+k[1];
+        norms[i] = sqrt(qn[i*2]*qn[i*2]+qn[i*2+1]*qn[i*2+1]);
+        
+        std::cout << qn[i*2]*180/PI <<"  "<< qn[i*2 + 1]*180/PI << "  " << torque_i[i] << "  " << t0 << "  " << norms[i] << endl;
+        
         t0 = t0+h;
-        q[0] = qn[0];
-        q[1] = qn[1];
-        oldnorm = newnorm;
+        q[0] = qn[i*2];
+        q[1] = qn[i*2+1];
+    }
+    start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < n-1; i++){
+        if (norms[i]<min_norm) min_norm = norms[i];
     }
 
     end = std::chrono::high_resolution_clock::now();
     std::cout<<"\nValue of q[1] at t = "<< t0 << " is "<<q[1]*180/PI << "\n";
     ms = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end - start);
     std::cout << "time for full calculation: "<< ms.count() <<"\n";
+    std::cout << "min norm: "<< min_norm <<"\n";
+    
+    delete[] norms;
     return 0;
 }
 
