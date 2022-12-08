@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
-#include "definitions.h"
+#include "single_definitions.h"
 #include <math.h>
 
 //#define d(x,y) (y*y-x*x)/(y*y+x*x);
@@ -28,7 +28,7 @@ int main(){
     float phi, tf, t0, h, yn, k1[2], k2[2], k3[2], k4[2], k[2], q[2], min_norm;
     int n;
     segment vals;
-    tpulse segt;
+    tpulseinfo segt;
     vector <float> fun1(2,0), fun2(2,0), fun3(2,0), fun4(2,0);
 
     q[0] = -5*PI/180; // Initial value of q1 = phi = 45 degrees
@@ -41,8 +41,8 @@ int main(){
     
     float* norms = new float[n];
     float* qn = new float[2*n];
-    segt.duration = 0.05; //Length of torque pulse [s]
-    segt.amp = 50; // maximum amplitude of torque pulse sin wave [N*m]
+    segt.duration = 0.06; //Length of torque pulse [s]
+    segt.amp = 45; // maximum amplitude of torque pulse sin wave [N*m]
     
 
     vals.l = 0.867; // anthro table length of ankle to hip
