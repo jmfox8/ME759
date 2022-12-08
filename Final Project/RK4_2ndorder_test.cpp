@@ -7,7 +7,7 @@
 //#define d(x,y) (y*y-x*x)/(y*y+x*x);
 #define PI 3.14159
 
-std::vector<float> f(float t, float *q,segment vals,float torque, float k, float l){
+/*std::vector<float> f(float t, float *q,segment vals,float torque, float k, float l){
     std::vector<float> fvec(2,0);
     fvec[0] = q[1]+k;
     fvec[1] = torque/vals.I+vals.m*9.81*vals.lc/vals.I*sin(q[0]+l);
@@ -21,11 +21,12 @@ float tcalc(tpulse torque, float t){
     val = torque.amp * sin(PI*t/torque.duration);
     return val;
     }
+    */
 using namespace std;
 
 int main(){
     // Initialize Solution Variables
-    float phi, tf, t0, h, yn, k1[2], k2[2], k3[2], k4[2], k[2], q[2], min_norm;
+    float phi, tf, t0, h, yn, k1[2], k2[2], k3[2], k4[2], k[2], q[2],qdot[2], min_norm;
     int n;
     segment vals;
     tpulseinfo segt;
@@ -59,7 +60,7 @@ int main(){
     // Calculate toruqes
     float torque_i[n];
     for (int i = 0; i<n; i++){
-        torque_i[i] = tcalc(segt,t0+(h*i));         //move this outside of for loop, parallelize separately for efficiency and load to shared mem?
+        torque_i[i] = tpulsecalc(segt,t0+(h*i));         //move this outside of for loop, parallelize separately for efficiency and load to shared mem?
     }
 
     // Calculate norm value for initial positions
@@ -68,7 +69,7 @@ int main(){
     for (int i = 0; i<n; i++){
 
         
-        fun1 = f(t0,q,vals,torque_i[i], 0, 0);
+        f(t0,q,qdot,torque_i[i], vals,0,0);
         k1[0] = h * fun1[0];
         k1[1] = h * fun1[1];
         
