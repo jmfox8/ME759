@@ -17,7 +17,7 @@ struct tpulseinfo{
     float ratio; //ratio of hip to ankle torque
 };
 
-struct simresults{
+struct RK4out{
     float norm;
     tpulseinfo torque;
 };

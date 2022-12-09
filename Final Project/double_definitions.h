@@ -19,7 +19,7 @@ struct tpulseinfo{
 
 // Function that calculates the q matrix values for Runge Kutta approach
 // Shell function to call functions that calculate M, C and G matrix and torque values
-void f(float *qdot, float t, float *q, float *M, float *torques, float *G, float *C, int n);
+void f(float t, float *q, float *qdot, float torque, segment vals, float k, float l);
 
 void Gmat(float *q,float *G,float t, float *K);
 
