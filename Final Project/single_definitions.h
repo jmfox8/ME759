@@ -1,6 +1,8 @@
 #ifndef SINGLE_DEFINITIONS_H
 #define SINGLE_DEFINITIONS_H
 #include <cstddef>
+#include <math.h>
+
 #define PI 3.14159
 struct segment{
     float l; //Length of body segment [m]
