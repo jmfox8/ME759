@@ -22,7 +22,7 @@ int main(int argc, char *argv[]){
     std::chrono::high_resolution_clock::time_point end;
 
     q0[0] = -5*PI/180;
-    q0[1] = 0*PI/180;;
+    q0[1] = 0*PI/180;
 
     float h = 0.01; // Step size for path solver [s]
     int t_n = 1000; // Number of values attempted for each torque parameter
@@ -40,7 +40,7 @@ int main(int argc, char *argv[]){
     if (q0[0] <= 0 )
     {
         tmin_amp = 0;
-        tmax_amp = 60;
+        tmax_amp = 100;
     }
     else
     {
@@ -64,11 +64,12 @@ int main(int argc, char *argv[]){
         }
     }
     start = std::chrono::high_resolution_clock::now();
-        for (int i = 0; i < t_n*t_n; i++){
-            //std::cout<<torque_array[i].amp<<"\n";
-            output_bests[i] = RK4(sim_time,h,torque_array[i], q0, vals);
-            if (overall_best.norm > output_bests[i].norm) overall_best = output_bests[i];
-        }
+    for (int i = 0; i < t_n*t_n; i++){
+        //std::cout<<torque_array[i].amp<<"\n";
+        output_bests[i] = RK4(sim_time,h,torque_array[i], q0, vals);
+        if (overall_best.norm > output_bests[i].norm) overall_best = output_bests[i];
+    }
+
     end = std::chrono::high_resolution_clock::now();
     ms = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end - start);
     std::cout << "time for loop: "<< ms.count() <<"\n";

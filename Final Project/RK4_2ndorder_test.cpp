@@ -17,17 +17,19 @@ int main(){
     tpulseinfo segt;
 
     q[0] = -5*PI/180; // Initial value of q1 = phi = 45 degrees
-    q[1] = 0; // Initial value of q2 = phidot = 0 degrees/s;
+    q[1] = 0*PI/180; // Initial value of q2 = phidot = 0 degrees/s;
     //torque = 40; // torque value at pivot joint [Newtons]
     t0 = 0; //initial value of deriving variable (time)
-    tf = 0.4; // final value of deriving variable (time)
-    n = 100; // Number of steps
-    h = (tf-t0)/n; //step size
-    
+    tf = 0.5; // final value of deriving variable (time)
+    //n = 50; // Number of steps
+    //h = (tf-t0)/n; //step size
+    h = .01;
+    n = tf/h;
+
     float* norms = new float[n];
     float* qn = new float[2*n];
-    segt.duration = 0.06; //Length of torque pulse [s]
-    segt.amp = 45; // maximum amplitude of torque pulse sin wave [N*m]
+    segt.duration = 0.06275; //Length of torque pulse [s]
+    segt.amp = 40.7; // maximum amplitude of torque pulse sin wave [N*m]
     
 
     vals.l = 0.867; // anthro table length of ankle to hip
@@ -49,8 +51,8 @@ start = std::chrono::high_resolution_clock::now();
     }
 
     // Calculate norm value for initial positions
-    min_norm = sqrt(q[0]*q[0] + q[1]*q[1]);
-
+    //min_norm = sqrt(q[0]*q[0] + q[1]*q[1]);
+    min_norm = 10;
     for (int i = 0; i<n; i++){
 
         
@@ -69,7 +71,7 @@ start = std::chrono::high_resolution_clock::now();
         fsingle(t0+h,q,qdot,torque_i[i],vals,k3[0],k3[1]);
         k4[0] = h * qdot[0];
         k4[1] = h * qdot[1];
-
+        //std::cout<<k4[0]<<" "<<k4[1]<<"\n";
         k[0] = (k1[0]+2*k2[0]+2*k3[0]+k4[0])/6;
         k[1] = (k1[1]+2*k2[1]+2*k3[1]+k4[1])/6;
         //k3 = h * fn((x0+h/2),(y0+k2/2));
@@ -77,7 +79,7 @@ start = std::chrono::high_resolution_clock::now();
         //k = (k1+2*k2+2*k3+k4)/6;
         qn[i*2] = q[0]+k[0];
         qn[i*2 + 1] = q[1]+k[1];
-        norms[i] = sqrt(qn[i*2]*qn[i*2]+qn[i*2+1]*qn[i*2+1]);
+        norms[i] = sqrt(qn[i*2]*qn[i*2]+qn[i*2+1]*qn[i*2+1])*180/PI;
         
         std::cout << qn[i*2]*180/PI <<"  "<< qn[i*2 + 1]*180/PI << "  " << torque_i[i] << "  " << t0 << "  " << norms[i] << endl;
         
@@ -97,6 +99,7 @@ start = std::chrono::high_resolution_clock::now();
     std::cout << "min norm: "<< min_norm <<"\n";
     
     delete[] norms;
+    delete[] qn;
     return 0;
 }
 
