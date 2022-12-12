@@ -1,4 +1,4 @@
-#include "single_definitions.h"
+#include "single_definitions.cuh"
 #include "RK4.cuh"
 #include <cstddef>
 #include <math.h>
@@ -65,8 +65,9 @@ int main(int argc, char *argv[]){
         }
     }
     start = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < t_n*t_n; i++){
-        output_bests[i] = RK4(sim_time,h,torque_array[i], q0, vals);
+    
+        RK4<<<1,256>>(sim_time,h,torque_array[i], q0, vals,output_bests);
+        for (int i = 0; i < t_n*t_n; i++){
         if (overall_best.norm > output_bests[i].norm) overall_best = output_bests[i];
     }
 
