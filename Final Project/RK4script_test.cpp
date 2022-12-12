@@ -1,16 +1,13 @@
 #include "single_definitions.h"
-#include "RK4.cuh"
+#include "RK4.h"
 #include <cstddef>
 #include <math.h>
 #include <iostream>
 #include <chrono>
-#include <cuda.h>
 
 #define PI 3.14159
 
-
-// CONFIGURED FOR SINGLE INVERTED PENDULUM
-int main(int argc, char *argv[]){
+int main(){
     float q0[2], tmax_amp, tmin_amp, tmax_dur, tmin_dur;
     segment vals[2];
     // Get Command Line Input
@@ -27,8 +24,8 @@ int main(int argc, char *argv[]){
 
     float h = 0.01; // Step size for path solver [s]
     int t_n = 1000; // Number of values attempted for each torque parameter
-    cudaMallocManaged((void**)&torque_array, t_n*t_n*sizeof(tpulseinfo));
-    cudaMallocManaged((void**)&output_bests, t_n*t_n*sizeof(RK4out));
+    tpulseinfo* torque_array = new tpulseinfo[t_n*t_n];
+    RK4out* output_bests = new RK4out[t_n*t_n];
     RK4out overall_best;
     overall_best.norm = 100;
     
@@ -41,7 +38,7 @@ int main(int argc, char *argv[]){
     if (q0[0] <= 0 )
     {
         tmin_amp = 0;
-        tmax_amp = 100;
+        tmax_amp = 60;
     }
     else
     {
@@ -55,21 +52,15 @@ int main(int argc, char *argv[]){
     float t_amp_step = (tmax_amp - tmin_amp)/t_n;
 
     float sim_time = 0.5;
-    torque_array[0].amp = tmin_amp;
-    torque_array[0].duration = tmin_dur;
+    torque_array[0].amp = 40.7;
+    torque_array[0].duration = 0.06275;
 
-    for (int i = 0; i < t_n; i++){
-        for (int j = 0; j<t_n; j++){
-            torque_array[i*t_n + j].amp = tmin_amp + i*t_amp_step;
-            torque_array[i*t_n + j].duration = tmin_dur + j*t_dur_step;
-        }
-    }
     start = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < t_n*t_n; i++){
-        output_bests[i] = RK4(sim_time,h,torque_array[i], q0, vals);
-        if (overall_best.norm > output_bests[i].norm) overall_best = output_bests[i];
-    }
-
+        for (int i = 0; i < 1; i++){
+            //std::cout<<torque_array[i].amp<<"\n";
+            output_bests[i] = RK4(sim_time,h,torque_array[i], q0, vals);
+            if (overall_best.norm > output_bests[i].norm) overall_best = output_bests[i];
+        }
     end = std::chrono::high_resolution_clock::now();
     ms = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end - start);
     std::cout << "time for loop: "<< ms.count() <<"\n";
