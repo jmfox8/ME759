@@ -3,8 +3,9 @@
 #include "single_definitions.cuh"
 #include <cstddef>
 
-__global__ void RK4(float tf, float n, tpulseinfo tspecs, float *q0, segment *vals, RK4out *output);
+__global__ void RK4(float tf, float n, tpulseinfo *tspecs, float *q0, segment *vals, RK4out *output, int t_n);
 
-__device__ void torquecalc(float *torque_i, float h, struct tpluseinfo tspecs);
+__global__ void torquecalc(float *torque_i, float h, tpulseinfo tspecs, int n);
+
 
 #endif

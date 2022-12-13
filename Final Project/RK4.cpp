@@ -5,7 +5,7 @@
 #include <iostream>
 
 #define PI 3.14159
-
+ 
 RK4out RK4(float tf, float h, tpulseinfo tspecs, float *q0, segment *vals){
 //CURRENT CONFIGURATION FOR SINGLE INVERTED PENDULUM
 
