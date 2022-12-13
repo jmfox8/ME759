@@ -16,18 +16,18 @@ int main(int argc, char *argv[]){
     //q0[1] = atof(argv[2]);
 
 
-    int t_n = 100; // Number of values attempted for each torque parameter
+    int t_n = 1000; // Number of values attempted for each torque parameter
 
     //Initialize Variables and values to pass to device
-    float tmax_amp, tmin_amp, tmax_dur, tmin_dur,q0[2];
+    float tmax_amp, tmin_amp, tmax_dur, tmin_dur;
     segment vals;
+    angular_vals q0;
+    RK4out overall_best;
     tpulseinfo *torque_array;
     RK4out *output_bests;
-    RK4out overall_best;
-    //cudaMallocManaged((void**)&q0,2*sizeof(float));
+    
     cudaMallocManaged((void**)&torque_array, t_n*t_n*sizeof(tpulseinfo));
     cudaMallocManaged((void**)&output_bests, t_n*t_n*sizeof(RK4out));
-    //cudaMallocManaged((void**)&vals, 2*sizeof(segment));
   
     // Initialize Variables for timing
     std::chrono::duration<double, std::milli> ms;
@@ -35,8 +35,8 @@ int main(int argc, char *argv[]){
     std::chrono::high_resolution_clock::time_point end;
 
     // Provide initial values and values for running RK4
-    q0[0] = -5*PI/180; // Initial position in Radians
-    q0[1] = 0*PI/180; // Initial velocity in Radians/s
+    q0.q1 = -5*PI/180; // Initial position in Radians
+    q0.q2 = 0*PI/180; // Initial velocity in Radians/s
 
     float h = 0.01; // Step size for RK4 solver method
     float sim_time = 0.5; //Ending time for RK4 solver in seconds
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]){
 
     overall_best.norm = 100;
     
-    if (q0[0] <= 0 )
+    if (q0.q1 <= 0 )
     {
         tmin_amp = 0;
         tmax_amp = 50;
@@ -93,8 +93,6 @@ int main(int argc, char *argv[]){
     std::cout << "best performance - norm: " << overall_best.norm << " torque amp: " << overall_best.torque.amp << " torque time: " << overall_best.torque.duration << "\n";
 
     // Memory cleanup
-    cudaFree(q0);
     cudaFree(torque_array);
     cudaFree(output_bests);
-    cudaFree(vals);
 }
