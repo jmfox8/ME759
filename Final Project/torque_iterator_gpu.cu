@@ -79,7 +79,7 @@ int main(int argc, char *argv[]){
 
     // Call to RK4 kernel and timing
     start = std::chrono::high_resolution_clock::now();
-        RK4<<<full_blocks_needed+1,threads_per_block>>>(sim_time,h,torque_array, q0, vals,output_bests, t_n);
+        single_RK4<<<full_blocks_needed+1,threads_per_block>>>(sim_time,h,torque_array, q0, vals,output_bests, t_n);
         cudaDeviceSynchronize();
         for (int i = 0; i < t_n*t_n; i++){
         //std::cout << output_bests[i].norm << "\n";
