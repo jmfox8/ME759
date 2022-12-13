@@ -11,27 +11,31 @@
 
 // CONFIGURED FOR SINGLE INVERTED PENDULUM
 int main(int argc, char *argv[]){
-    float q0[2], tmax_amp, tmin_amp, tmax_dur, tmin_dur;
-    segment vals[2];
     // Get Command Line Input
     //q0[0]= atof(argv[1]);
     //q0[1] = atof(argv[2]);
+    
+    // Initialize Variables
+    float q0[2], tmax_amp, tmin_amp, tmax_dur, tmin_dur;
+    segment vals[2];
+
+    float h = 0.01; // Step size for RK4 method
+    int t_n = 1000; // Number of values searched through for each torque parameter
+
+    tpulseinfo* torque_array = new tpulseinfo[t_n*t_n];
+    RK4out* output_bests = new RK4out[t_n*t_n];
+    RK4out overall_best;
+    overall_best.norm = 100;
+
 
     // Initialize Variables for timing
     std::chrono::duration<double, std::milli> ms;
     std::chrono::high_resolution_clock::time_point start;
     std::chrono::high_resolution_clock::time_point end;
 
-    q0[0] = -5*PI/180;
-    q0[1] = 0*PI/180;
+    q0[0] = -5*PI/180; // Set initial angular position in radians
+    q0[1] = 0*PI/180; // Set initial angular velocity in radians/s
 
-    float h = 0.01; // Step size for path solver [s]
-    int t_n = 1000; // Number of values attempted for each torque parameter
-    tpulseinfo* torque_array = new tpulseinfo[t_n*t_n];
-    RK4out* output_bests = new RK4out[t_n*t_n];
-    RK4out overall_best;
-    overall_best.norm = 100;
-    
     vals[0].l = 0.867; // anthro table length of ankle to hip
     vals[0].lc = 0.589; // anthro table lenth of ankle to CM of legs
     vals[0].m = 26.30; // anthro table mass of lower leg segments
@@ -41,12 +45,12 @@ int main(int argc, char *argv[]){
     if (q0[0] <= 0 )
     {
         tmin_amp = 0;
-        tmax_amp = 100;
+        tmax_amp = 50;
     }
     else
     {
-        tmax_amp = -50;
-        tmin_amp = -100;
+        tmax_amp = 0;
+        tmin_amp = -50;
     }
 
     tmax_dur = 0.3;

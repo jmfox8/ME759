@@ -19,16 +19,15 @@ int main(int argc, char *argv[]){
     int t_n = 100; // Number of values attempted for each torque parameter
 
     //Initialize Variables and values to pass to device
-    float tmax_amp, tmin_amp, tmax_dur, tmin_dur;
-    segment *vals;
-    float *q0;
+    float tmax_amp, tmin_amp, tmax_dur, tmin_dur,q0[2];
+    segment vals;
     tpulseinfo *torque_array;
     RK4out *output_bests;
     RK4out overall_best;
-    cudaMallocManaged((void**)&q0,2*sizeof(float));
+    //cudaMallocManaged((void**)&q0,2*sizeof(float));
     cudaMallocManaged((void**)&torque_array, t_n*t_n*sizeof(tpulseinfo));
     cudaMallocManaged((void**)&output_bests, t_n*t_n*sizeof(RK4out));
-    cudaMallocManaged((void**)&vals, 2*sizeof(segment));
+    //cudaMallocManaged((void**)&vals, 2*sizeof(segment));
   
     // Initialize Variables for timing
     std::chrono::duration<double, std::milli> ms;
@@ -42,11 +41,11 @@ int main(int argc, char *argv[]){
     float h = 0.01; // Step size for RK4 solver method
     float sim_time = 0.5; //Ending time for RK4 solver in seconds
 
-    vals[0].l = 0.867; // anthro table length of ankle to hip
-    vals[0].lc = 0.589; // anthro table lenth of ankle to CM of legs
-    vals[0].m = 26.30; // anthro table mass of lower leg segments
-    vals[0].I = 1.4; // anthro table moment of intertia of leg segments
-    vals[0].Icm = vals[0].I+vals[0].m*vals[0].lc*vals[0].lc;
+    vals.l = 0.867; // anthro table length of ankle to hip
+    vals.lc = 0.589; // anthro table lenth of ankle to CM of legs
+    vals.m = 26.30; // anthro table mass of lower leg segments
+    vals.I = 1.4; // anthro table moment of intertia of leg segments
+    vals.Icm = vals.I+vals.m*vals.lc*vals.lc;
 
     overall_best.norm = 100;
     
