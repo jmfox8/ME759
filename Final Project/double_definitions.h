@@ -2,10 +2,12 @@
 #define DOUBLE_DEFINITIONS_H
 #include <cstddef>
 
-struct angular_vals{
+struct angular_vals2{
     float q1;
     float q2;
-}
+    float q3;
+    float q4;
+};
 
 struct segment{
     float l; //Length of body segment [m]
@@ -19,12 +21,18 @@ struct segment{
 struct tpulseinfo{
     float amp; //Peak of torque waveform
     float duration; //Length of torque waveform
-    float ratio; //ratio of hip to ankle torque
+    float ratio; //ratio of hip to ankle torque, hip = ankle*ratio
 };
+
+struct RK4out{
+    float norm;
+    tpulseinfo torque;
+};
+
 
 // Function that calculates the q matrix values for Runge Kutta approach
 // Shell function to call functions that calculate M, C and G matrix and torque values
-void f(float t, float *q, float *qdot, float *torques, segment vals[2], float *K);
+void f(float t, float *q, float *qdot, float *torques, segment vals[2], float k, float l, float m, float n);
     
 void Gmat(float *q,float *G,float t, float *K, segment vals[2]);
 
@@ -32,6 +40,6 @@ void Cmat(float *q,float *C,float t, float *K, segment vals[2]);
 
 void Mmat(float *q, float *M, float t, float *K, segment vals[2]);
 
-float tpulsecalc(tpulseinfo torque, float time, float *joint_t);
+void tpulsecalc(tpulseinfo torque, float time, float *joint_t);
 
 #endif

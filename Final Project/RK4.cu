@@ -45,20 +45,20 @@ __global__ void single_RK4(float tf, float h, tpulseinfo *tspecs, angular_vals q
             k[1][1] = h * qdot[1];
             
             //fsingle<<<1,1>>>(t0+h/2,q,qdot,torque_i[i],vals[0],k[1][0]/2,k[1][1]/2);
-            qdot[0] = q[1] + k[1][0]/2;
-            qdot[1] = torque_i/vals.I+vals.m*g*vals.lc/vals.I*sin(q[0]+k[1][1]/2);
+            qdot[0] = q[1] + k[1][1]/2;
+            qdot[1] = torque_i/vals.I+vals.m*g*vals.lc/vals.I*sin(q[0]+k[1][0]/2);
             k[2][0] = h * qdot[0];
             k[2][1] = h * qdot[1];
 
             //fsingle<<<1,1>>>(t0+h/2,q,qdot,torque_i[i],vals[0],k[2][0]/2,k[2][1]/2);
-            qdot[0] = q[1] + k[2][0]/2;
-            qdot[1] = torque_i/vals.I+vals.m*g*vals.lc/vals.I*sin(q[0]+k[2][1]/2);
+            qdot[0] = q[1] + k[2][1]/2;
+            qdot[1] = torque_i/vals.I+vals.m*g*vals.lc/vals.I*sin(q[0]+k[2][0]/2);
             k[3][0] = h * qdot[0];
             k[3][1] = h * qdot[1];
 
             //fsingle<<<1,1>>>(t0+h,q,qdot,torque_i[i],vals[0],k[3][0],k[3][1]);
-            qdot[0] = q[1] + k[3][0];
-            qdot[1] = torque_i/vals.I+vals.m*g*vals.lc/vals.I*sin(q[0]+k[3][1]);
+            qdot[0] = q[1] + k[3][1];
+            qdot[1] = torque_i/vals.I+vals.m*g*vals.lc/vals.I*sin(q[0]+k[3][0]);
             k[4][0] = h * qdot[0];
             k[4][1] = h * qdot[1];
             

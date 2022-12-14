@@ -44,8 +44,8 @@ int main(int argc, char *argv[]){
     vals.l = 0.867; // anthro table length of ankle to hip
     vals.lc = 0.589; // anthro table lenth of ankle to CM of legs
     vals.m = 26.30; // anthro table mass of lower leg segments
-    vals.I = 1.4; // anthro table moment of intertia of leg segments
-    vals.Icm = vals.I+vals.m*vals.lc*vals.lc;
+    vals.Icm = 1.4; // anthro table moment of intertia of leg segments around CM
+    vals.I = vals.I+vals.m*vals.lc*vals.lc; // moment of intertia of leg segments around ankle
 
     overall_best.norm = 100;
     
