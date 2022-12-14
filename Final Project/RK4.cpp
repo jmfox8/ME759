@@ -16,7 +16,7 @@ RK4out output;
 // Set intial values
 q[0] = q0.q1; // Angular Position
 q[1] = q0.q2; // Angular Velocity
-t0 = 0; // Time
+t0 = 0;  // Time
 
 // Define steps needed basd on inputs
 int n = tf/h;

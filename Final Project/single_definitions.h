@@ -3,7 +3,7 @@
 #include <cstddef>
 #include <math.h>
 
-#define PI 3.14159
+#define PI 3.14159 
 
 struct angular_vals{
     float q1;

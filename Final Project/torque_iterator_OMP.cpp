@@ -4,7 +4,7 @@
 #include <math.h>
 #include <iostream>
 #include <chrono>
-//#include <omp.h>
+#include <omp.h>
 
 #define PI 3.14159
 
@@ -71,11 +71,10 @@ int main(int argc, char *argv[]){
         }
     }
     start2 = std::chrono::high_resolution_clock::now();
-    //#pragma omp parallel num_threads(20)
+    #pragma omp parallel num_threads(20)
     {
-        //#pragma omp  for
+        #pragma omp for
             for (int i = 0; i < t_n*t_n; i++){
-                //std::cout<<torque_array[i].amp<<"\n";
                 output_bests[i] = RK4(sim_time,h,torque_array[i], q0, vals);
                 if (overall_best.norm > output_bests[i].norm) overall_best = output_bests[i];
             }
@@ -83,6 +82,10 @@ int main(int argc, char *argv[]){
     end = std::chrono::high_resolution_clock::now();
     ms1 = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end - start1);
     ms2 = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end - start2);
-    std::cout << "Time for RK4 loop: "<< ms2.count() <<"\n Time for Torque Allocation + RK4 Loop: "<< ms1.count()<<"\nTorque Steps: "<<t_n<<"\nInitial Values - q1: "<<q0.q1*180/PI<<" degrees q2: "<<q0.q2*180/PI<<" degrees/s\n";
+    std::cout << "Time for RK4 loop: "<< ms2.count() <<"\nTime for Torque Allocation + RK4 Loop: "<< ms1.count()<<"\nTorque Steps: "<<t_n<<"\nInitial Values - q1: "<<q0.q1*180/PI<<" Degrees q2: "<<q0.q2*180/PI<<" Degrees/s\n";
     std::cout << "Best Performance - Norm: " << overall_best.norm << " Torque Amp: " << overall_best.torque.amp << " Torque Duration: " << overall_best.torque.duration<<"\n";
+
+// Memory Cleanup
+delete[] torque_array;
+delete[] output_bests;
 }
