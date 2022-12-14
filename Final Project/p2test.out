@@ -1,0 +1,5 @@
+Time for RK4 loop: 7367.4
+Time for Torque Allocation + RK4 Loop: 7426.64
+Torque Steps: 200
+ Initial values - q1: -5 Degrees q2: 0 Degrees/s q3: -5 Degrees q4: 0 Degrees/s
+Best Performance - Norm: 7.07107 Torque Amp: 32.5 Torque Duration: 0.05 Torque Ratio: 0
