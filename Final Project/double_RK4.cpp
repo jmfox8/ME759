@@ -10,7 +10,7 @@ RK4out double_RK4(float tf, float h, tpulseinfo tspecs, angular_vals2 q0, segmen
 //CURRENT CONFIGURATION FOR SINGLE INVERTED PENDULUM
 
 // initialize values needed for executing RK4 run based on inputs
-float q[4], qdot[4], min_norm, k[5][4], t0, torque_i[2], qn[4];
+float q[4], qdot[4], min_norm, k[5][4], t0, torque_i[2], qn[4], norm;
 RK4out output;
 
 // Set intial values
@@ -23,12 +23,10 @@ t0 = 0; // Time
 // Define steps needed based on inputs
 int n = tf/h;
 
-// Allocate memory based on steps needed
-float* norms = new float[n];
-
 //min_norm = sqrt(q[0]*q[0] + q[1]*q[1]);
 min_norm = 10;
 for (int i = 0; i<n; i++){
+    
     tpulsecalc(tspecs, h*i, torque_i);   
 
     f(t0,q,qdot,torque_i, vals,0,0,0,0);
@@ -66,11 +64,12 @@ for (int i = 0; i<n; i++){
     qn[2] = q[2]+k[0][2];
     qn[3] = q[3]+k[0][3];
 
-    norms[i] = sqrt(qn[0]*qn[0]+qn[1]*qn[1]+qn[2]*qn[2]+qn[3]*qn[3])*180/PI;
+    norm = sqrt(qn[0]*qn[0]+qn[1]*qn[1]+qn[2]*qn[2]+qn[3]*qn[3])*180/PI;
     
     //std::cout << qn[0]*180/PI <<" a "<< qn[1]*180/PI << "  " << torque_i[0] << "  " << t0 << "  " << norms[i] << "\n";
     //std::cout << qn[2]*180/PI <<" h "<< qn[3]*180/PI << "  " << torque_i[1] << "  " << t0 << "  " << norms[i] << "\n";
-    
+    if (norm<min_norm) min_norm = norm;
+
     t0 = t0+h;
     q[0] = qn[0];
     q[1] = qn[1];
@@ -78,15 +77,8 @@ for (int i = 0; i<n; i++){
     q[3] = qn[3];
 }
 
-for (int i = 0; i < n-1; i++){
-    if (norms[i]<min_norm) min_norm = norms[i];
-}
-
 output.norm = min_norm;
 output.torque = tspecs;
-
-// Memory clean up
-delete[] norms;
 
 // Return Output
 return(output);

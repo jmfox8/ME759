@@ -69,13 +69,11 @@ __global__ void single_RK4(float tf, float h, tpulseinfo *tspecs, angular_vals q
             qn[1] = q[1]+k[0][1];
             norm = sqrt(qn[0]*qn[0]+qn[1]*qn[1])*180/PI;
             
+            if (norm < min_norm) min_norm = norm;
+            
             t0 = t0+h;
             q[0] = qn[0];
             q[1] = qn[1];
-        }
-
-        for (int i = 0; i < n-1; i++){
-            if (norm < min_norm) min_norm = norm;
         }
         
         output[thread_i].norm = min_norm;
