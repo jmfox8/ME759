@@ -12,6 +12,7 @@ module load nvidia/cuda/11.6.0
 
 nvcc torque_iterator_gpu.cu single_definitions.cu RK4.cu -lineinfo -Xcompiler -O3 -Xcompiler -Wall -Xptxas -O3 -std=c++17 -o ctest
 
+./ctest -5 0 1000
+
 #compute-sanitizer --tool memcheck ./ctest -5 0 1000
 
-./ctest -5 0 1000

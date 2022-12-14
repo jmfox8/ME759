@@ -31,7 +31,6 @@ struct RK4out{
 };
 
 // Function that calculates the q matrix values for Runge Kutta approach
-// Shell function to call functions that calculate M, C and G matrix and torque values
 __device__ void fsingle(float t, float *q, float *qdot, float torque, segment vals, float k, float l);
 
 #endif

@@ -10,7 +10,7 @@
 #define g 9.81
 
 __global__ void single_RK4(float tf, float h, tpulseinfo *tspecs, angular_vals q0, segment vals, RK4out *output, int t_n){
-//CURRENT CONFIGURATION FOR SINGLE INVERTED PENDULUM
+
     int thread = threadIdx.x;
     int block = blockIdx.x;
     int blocksize = blockDim.x;

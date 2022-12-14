@@ -24,6 +24,7 @@ int main(int argc, char *argv[]){
     q0.q1 = atof(argv[1])*PI/180; // Initial position in Radians
     q0.q2 = atof(argv[2])*PI/180; // Initial velocity in Radians/s
     int t_n = atoi(argv[3]); // Number of values attempted for each torque parameter
+    
     float h = 0.01; // Step size for RK4 solver method
     float sim_time = 0.5; //Ending time for RK4 solver in seconds
     
@@ -79,15 +80,14 @@ int main(int argc, char *argv[]){
         single_RK4<<<full_blocks_needed+1,threads_per_block>>>(sim_time,h,torque_array, q0, vals,output_bests, t_n);
         cudaDeviceSynchronize();
         for (int i = 0; i < t_n*t_n; i++){
-        //std::cout << output_bests[i].norm << "\n";
-        if (overall_best.norm > output_bests[i].norm) overall_best = output_bests[i];
-    }
+            if (overall_best.norm > output_bests[i].norm) overall_best = output_bests[i];
+            }
 
     end = std::chrono::high_resolution_clock::now();
     ms1 = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end - start1);
     ms2 = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end - start2);
 
-    std::cout << "Time for RK4 loop: "<< ms2.count() <<"\n Time for Torque Allocation + RK4 Loop: "<< ms1.count()<<"\nTorque Steps: "<<t_n<<"\nInitial Values - q1: "<<q0.q1*180/PI<<" degrees q2: "<<q0.q2*180/PI<<" degrees/s\n";
+    std::cout << "Time for RK4 loop: "<< ms2.count() <<"\nTime for Torque Allocation + RK4 Loop: "<< ms1.count()<<"\nTorque Steps: "<<t_n<<"\nInitial Values - q1: "<<q0.q1*180/PI<<" Degrees q2: "<<q0.q2*180/PI<<" Degrees/s\n";
     std::cout << "Best Performance - Norm: " << overall_best.norm << " Torque Amp: " << overall_best.torque.amp << " Torque Duration: " << overall_best.torque.duration<<"\n";
 
     // Memory cleanup

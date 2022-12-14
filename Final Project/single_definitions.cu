@@ -1,6 +1,6 @@
 #include "single_definitions.cuh"
-#include<iostream>
-#include<vector>
+#include <iostream>
+#include <vector>
 
 #define PI 3.14159
 #define g 9.81
