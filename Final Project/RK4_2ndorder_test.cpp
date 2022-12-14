@@ -28,15 +28,15 @@ int main(){
 
     float* norms = new float[n];
     float* qn = new float[2*n];
-    segt.duration = 0.06275; //Length of torque pulse [s]
-    segt.amp = 40.7; // maximum amplitude of torque pulse sin wave [N*m]
+    segt.duration = 0.2764; //Length of torque pulse [s]
+    segt.amp = 29.997; // maximum amplitude of torque pulse sin wave [N*m]
     
 
     vals.l = 0.867; // anthro table length of ankle to hip
     vals.lc = 0.589; // anthro table lenth of ankle to CM of legs
     vals.m = 26.30; // anthro table mass of lower leg segments
-    vals.I = 1.4; // anthro table moment of intertia of leg segments
-    vals.Icm = vals.I+vals.m*vals.lc*vals.lc;
+    vals.Icm = 1.4; // anthro table moment of intertia of leg segments
+    vals.I = vals.I+vals.m*vals.lc*vals.lc;
 
     // Initialize Variables for timing
     std::chrono::duration<double, std::milli> ms;

@@ -87,7 +87,7 @@ int main(int argc, char *argv[]){
     ms1 = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end - start1);
     ms2 = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end - start2);
 
-    std::cout << "Time for RK4 loop: "<< ms2.count() <<"\n Time for Torque Allocation + RK4 Loop: "<< ms1.count()<<"\nTorque Steps: "<<t_n<<"\nInitial Positions - q1: "<<q0.q1*180/PI<<" q2: "<<q0.q2*180/PI<<"\n";
+    std::cout << "Time for RK4 loop: "<< ms2.count() <<"\n Time for Torque Allocation + RK4 Loop: "<< ms1.count()<<"\nTorque Steps: "<<t_n<<"\nInitial Values - q1: "<<q0.q1*180/PI<<" degrees q2: "<<q0.q2*180/PI<<" degrees/s\n";
     std::cout << "Best Performance - Norm: " << overall_best.norm << " Torque Amp: " << overall_best.torque.amp << " Torque Duration: " << overall_best.torque.duration<<"\n";
 
     // Memory cleanup
