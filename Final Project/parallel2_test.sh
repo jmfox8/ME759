@@ -9,4 +9,4 @@
 
 g++ double_torque_iterator_OMP.cpp double_definitions.cpp double_RK4.cpp -Wall -O3 -std=c++17 -o p2test -fopenmp
 
-./p2test -5 0 -5 0 1000
+./p2test -5 0 -5 0 200

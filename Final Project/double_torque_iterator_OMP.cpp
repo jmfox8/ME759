@@ -4,16 +4,13 @@
 #include <math.h>
 #include <iostream>
 #include <chrono>
-//#include <omp.h>
+#include <omp.h>
 
 #define PI 3.14159
 
 // CONFIGURED FOR SINGLE INVERTED PENDULUM
 int main(int argc, char *argv[]){
-    // Get Command Line Input
-    //q0[0]= atof(argv[1]);
-    //q0[1] = atof(argv[2]);
-    
+   
     // Initialize Variables
     float tmax_amp, tmin_amp, tmax_dur, tmin_dur, tmax_ratio, tmin_ratio;
     segment vals[2];
@@ -67,8 +64,8 @@ int main(int argc, char *argv[]){
 
     tmax_dur = 0.3;
     tmin_dur = 0.05;
-    tmax_ratio = 1;
-    tmin_ratio = 0.05;
+    tmax_ratio = 1.5;
+    tmin_ratio = 0;
     float t_dur_step = (tmax_dur - tmin_dur)/t_n;
     float t_amp_step = (tmax_amp - tmin_amp)/t_n;
     float t_rat_step = (tmax_ratio - tmin_ratio)/t_n;
@@ -78,6 +75,8 @@ int main(int argc, char *argv[]){
     torque_array[0].ratio = tmin_ratio;
 
     start1 = std::chrono::high_resolution_clock::now();
+    
+    // Populate torque array with all torque combinations needed 
     for (int i = 0; i < t_n; i++){
         for (int j = 0; j<t_n; j++){
             for (int k = 0; k<t_n; k++){
@@ -88,11 +87,10 @@ int main(int argc, char *argv[]){
         }
     }
     start2 = std::chrono::high_resolution_clock::now();
-//#pragma omp parallel num_threads(20)
+#pragma omp parallel num_threads(20)
     {
-       //#pragma omp  for
+       #pragma omp for
             for (int i = 0; i < t_n*t_n*t_n; i++){
-                //std::cout<<torque_array[i].amp<<"\n";
                 output_bests[i] = double_RK4(sim_time, h, torque_array[i], q0, vals);
                 if (overall_best.norm > output_bests[i].norm) overall_best = output_bests[i];
             }

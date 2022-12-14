@@ -44,7 +44,8 @@ void tpulsecalc(tpulseinfo torque, float time, float *joint_t){
         joint_t[0] = 0;
         joint_t[1] = 0;
     }
-    else
-    joint_t[0] = torque.amp * sin(PI*time/torque.duration);
-    joint_t[1] = joint_t[0] * torque.ratio;
+    else{
+        joint_t[0] = torque.amp * sin(PI*time/torque.duration);
+        joint_t[1] = joint_t[0] * torque.ratio;
+    }
 }
