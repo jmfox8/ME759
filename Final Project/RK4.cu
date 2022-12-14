@@ -18,18 +18,17 @@ __global__ void single_RK4(float tf, float h, tpulseinfo *tspecs, angular_vals q
     if (thread_i >= t_n*t_n);
     else{
         // initialize values needed for executing RK4 run based on inputs
-        float q[2], qdot[2], min_norm, k[5][2], t0, torque_i, qn[2];
+        float q[2], qdot[2], min_norm, k[5][2], t0, torque_i, qn[2], norm;
         // Set intial values from inputs
         q[0] = q0.q1; // Angular Position
         q[1] = q0.q2; // Angular Velocity
         t0 = 0; // Time
         tpulseinfo tspec_thread = tspecs[thread_i]; //Torque Pulse information
-        min_norm = sqrt(q[0]*q[0] + q[1]*q[1]);
+        min_norm = sqrt(q[0]*q[0] + q[1]*q[1])*180/PI;
         // Define steps needed basd on inputs
         int n = tf/h;
 
         // Allocate memory based on steps needed
-        float* norms = new float[n];
 
         for (int i = 0; i<n; i++){
             
@@ -68,7 +67,7 @@ __global__ void single_RK4(float tf, float h, tpulseinfo *tspecs, angular_vals q
 
             qn[0] = q[0]+k[0][0];
             qn[1] = q[1]+k[0][1];
-            norms[i] = sqrt(qn[0]*qn[0]+qn[1]*qn[1])*180/PI;
+            norm = sqrt(qn[0]*qn[0]+qn[1]*qn[1])*180/PI;
             
             t0 = t0+h;
             q[0] = qn[0];
@@ -76,15 +75,12 @@ __global__ void single_RK4(float tf, float h, tpulseinfo *tspecs, angular_vals q
         }
 
         for (int i = 0; i < n-1; i++){
-            if (norms[i]<min_norm) min_norm = norms[i];
+            if (norm < min_norm) min_norm = norm;
         }
         
         output[thread_i].norm = min_norm;
         output[thread_i].torque.amp = tspec_thread.amp;
         output[thread_i].torque.duration = tspec_thread.duration;
         output[thread_i].torque.ratio = 0;
-
-        // Memory clean up
-        delete[] norms;
     }
 }

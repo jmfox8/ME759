@@ -28,8 +28,8 @@ int main(int argc, char *argv[]){
     overall_best.norm = 100;
 
     // Initialize Variables for timing
-    std::chrono::duration<double, std::milli> ms;
-    std::chrono::high_resolution_clock::time_point start;
+    std::chrono::duration<double, std::milli> ms1, ms2;
+    std::chrono::high_resolution_clock::time_point start1, start2;
     std::chrono::high_resolution_clock::time_point end;
 
     q0.q1 = -5*PI/180; // Set initial ankle angular position in radians
@@ -72,6 +72,7 @@ int main(int argc, char *argv[]){
     torque_array[0].duration = tmin_dur;
     torque_array[0].ratio = tmin_ratio;
 
+    start1 = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < t_n; i++){
         for (int j = 0; j<t_n; j++){
             for (int k = 0; k<t_n; k++){
@@ -81,10 +82,10 @@ int main(int argc, char *argv[]){
             }
         }
     }
-    start = std::chrono::high_resolution_clock::now();
+    start2 = std::chrono::high_resolution_clock::now();
 //#pragma omp parallel num_threads(20)
     {
-       // #pragma omp  for
+       //#pragma omp  for
             for (int i = 0; i < t_n*t_n*t_n; i++){
                 //std::cout<<torque_array[i].amp<<"\n";
                 output_bests[i] = double_RK4(sim_time, h, torque_array[i], q0, vals);
@@ -92,7 +93,8 @@ int main(int argc, char *argv[]){
             }
     }
     end = std::chrono::high_resolution_clock::now();
-    ms = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end - start);
-    std::cout << "time for loop: "<< ms.count() <<"\n";
-    std::cout << "best performance - norm: " << overall_best.norm << " torque amp: " << overall_best.torque.amp << " torque time: " << overall_best.torque.duration << "torque ratio: " << overall_best.torque.ratio<< "\n";
+    ms1 = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end - start1);
+    ms2 = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end - start2);
+    std::cout << "Time for RK4 loop: "<< ms2.count() <<"\n Time for Torque Allocation + RK4 Loop: "<< ms1.count()<<"\n Torque Steps: "<<t_n<<"\nInitial Positions - q1: "<<q0.q1*180/PI<<" q2: "<<q0.q2*180/PI<<" q3: "<<q0.q3*180/PI<<" q4: "<<q0.q4*180/PI<<"\n";
+    std::cout << "Best Performance - Norm: " << overall_best.norm << " Torque Amp: " << overall_best.torque.amp << " Torque Duration: " << overall_best.torque.duration << "Torque Ratio: " << overall_best.torque.ratio<< "\n";
 }

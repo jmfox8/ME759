@@ -4,6 +4,12 @@
 #include <math.h>
 
 #define PI 3.14159
+
+struct angular_vals{
+    float q1;
+    float q2;
+};
+
 struct segment{
     float l; //Length of body segment [m]
     float lc; // Distance from distal joint to CoM of segment [m]

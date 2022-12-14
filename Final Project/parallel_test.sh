@@ -9,4 +9,4 @@
 
 g++ torque_iterator_OMP.cpp single_definitions.cpp RK4.cpp -Wall -O3 -std=c++17 -o ptest -fopenmp
 
-./ptest
+./ptest -5 0 1000
