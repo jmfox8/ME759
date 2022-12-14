@@ -1,3 +1,4 @@
+// Author: Jackson Fox
 #include "single_definitions.cuh"
 #include <iostream>
 #include <vector>

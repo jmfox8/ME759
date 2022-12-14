@@ -1,3 +1,4 @@
+// Author - Jackson Fox
 #include "double_definitions.h"
 #include<iostream>
 #include<vector>

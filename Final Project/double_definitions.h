@@ -1,3 +1,4 @@
+// Author: Jackson Fox
 #ifndef DOUBLE_DEFINITIONS_H
 #define DOUBLE_DEFINITIONS_H
 #include <cstddef>

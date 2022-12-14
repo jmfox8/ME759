@@ -16,3 +16,4 @@ nvcc torque_iterator_gpu.cu single_definitions.cu RK4.cu -lineinfo -Xcompiler -O
 
 #compute-sanitizer --tool memcheck ./ctest -5 0 1000
 
+#Author - Jackson Fox

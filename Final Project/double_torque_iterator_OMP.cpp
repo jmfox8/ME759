@@ -1,3 +1,4 @@
+// Author: Jackson Fox
 #include "double_definitions.h"
 #include "double_RK4.h"
 #include <cstddef>
@@ -100,4 +101,8 @@ int main(int argc, char *argv[]){
     ms2 = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end - start2);
     std::cout << "Time for RK4 loop: "<< ms2.count() <<"\nTime for Torque Allocation + RK4 Loop: "<< ms1.count()<<"\nTorque Steps: "<<t_n<<"\n Initial values - q1: "<<q0.q1*180/PI<<" Degrees q2: "<<q0.q2*180/PI<<" Degrees/s q3: "<<q0.q3*180/PI<<" Degrees q4: "<<q0.q4*180/PI<<" Degrees/s\n";
     std::cout << "Best Performance - Norm: " << overall_best.norm << " Torque Amp: " << overall_best.torque.amp << " Torque Duration: " << overall_best.torque.duration << " Torque Ratio: " << overall_best.torque.ratio<< "\n";
+
+    // Memory Cleanup
+    delete[] torque_array;
+    delete[] output_bests;
 }

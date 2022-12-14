@@ -10,3 +10,5 @@
 g++ torque_iterator_OMP.cpp single_definitions.cpp RK4.cpp -Wall -O3 -std=c++17 -o ptest -fopenmp
 
 ./ptest -5 0 100
+
+# Author: Jackson Fox

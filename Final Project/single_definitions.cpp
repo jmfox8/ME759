@@ -1,3 +1,4 @@
+// Author: Jackson Fox
 #include "single_definitions.h"
 #include<iostream>
 #include<vector>

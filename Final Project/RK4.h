@@ -1,3 +1,4 @@
+// Author: Jackson Fox
 #ifndef RK4_H
 #define RK4_H
 #include "single_definitions.h"

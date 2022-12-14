@@ -1,3 +1,4 @@
+// Author: Jackson Fox
 #ifndef RK4_CUH
 #define RK4_CUH
 #include "single_definitions.cuh"

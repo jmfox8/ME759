@@ -1,3 +1,4 @@
+// Author: Jackson Fox
 #ifndef SINGLE_DEFINITIONS_CUH
 #define SINGLE_DEFINITIONS_CUH
 #include <cstddef>

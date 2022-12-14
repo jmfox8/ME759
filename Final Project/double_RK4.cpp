@@ -1,3 +1,4 @@
+// Author: Jackson Fox
 #include "double_definitions.h"
 #include "double_RK4.h"
 #include <cstddef>
