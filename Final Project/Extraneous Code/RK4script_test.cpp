@@ -1,0 +1,68 @@
+#include "single_definitions.h"
+#include "RK4.h"
+#include <cstddef>
+#include <math.h>
+#include <iostream>
+#include <chrono>
+
+#define PI 3.14159
+
+int main(){
+    float q0[2], tmax_amp, tmin_amp, tmax_dur, tmin_dur;
+    segment vals[2];
+    // Get Command Line Input
+    //q0[0]= atof(argv[1]);
+    //q0[1] = atof(argv[2]);
+
+    // Initialize Variables for timing
+    std::chrono::duration<double, std::milli> ms;
+    std::chrono::high_resolution_clock::time_point start;
+    std::chrono::high_resolution_clock::time_point end;
+
+    q0[0] = -5*PI/180;
+    q0[1] = 0*PI/180;
+
+    float h = 0.01; // Step size for path solver [s]
+    int t_n = 1000; // Number of values attempted for each torque parameter
+    tpulseinfo* torque_array = new tpulseinfo[t_n*t_n];
+    RK4out* output_bests = new RK4out[t_n*t_n];
+    RK4out overall_best;
+    overall_best.norm = 100;
+    
+    vals[0].l = 0.867; // anthro table length of ankle to hip
+    vals[0].lc = 0.589; // anthro table lenth of ankle to CM of legs
+    vals[0].m = 26.30; // anthro table mass of lower leg segments
+    vals[0].I = 1.4; // anthro table moment of intertia of leg segments
+    vals[0].Icm = vals[0].I+vals[0].m*vals[0].lc*vals[0].lc;
+    
+    if (q0[0] <= 0 )
+    {
+        tmin_amp = 0;
+        tmax_amp = 60;
+    }
+    else
+    {
+        tmax_amp = -50;
+        tmin_amp = -100;
+    }
+
+    tmax_dur = 0.3;
+    tmin_dur = 0.05;
+    float t_dur_step = (tmax_dur - tmin_dur)/t_n;
+    float t_amp_step = (tmax_amp - tmin_amp)/t_n;
+
+    float sim_time = 0.5;
+    torque_array[0].amp = 40.7;
+    torque_array[0].duration = 0.06275;
+
+    start = std::chrono::high_resolution_clock::now();
+        for (int i = 0; i < 1; i++){
+            //std::cout<<torque_array[i].amp<<"\n";
+            output_bests[i] = RK4(sim_time,h,torque_array[i], q0, vals);
+            if (overall_best.norm > output_bests[i].norm) overall_best = output_bests[i];
+        }
+    end = std::chrono::high_resolution_clock::now();
+    ms = std::chrono::duration_cast<std::chrono::duration<double, std::milli> >(end - start);
+    std::cout << "time for loop: "<< ms.count() <<"\n";
+    std::cout << "best performance - norm: " << overall_best.norm << "torque amp: " << overall_best.torque.amp << "torque time: " << overall_best.torque.duration << "\n";
+}
